@@ -104,7 +104,62 @@ It's largely influenced by the [RSL][3] and [GLSL][4] languages.
 		Point3 viewport2world(Point3);	/* Point3 viewport2world(Camera*, Point3); */
 		Point3 world2model(Point3);	/* Point3 world2model(Entity*, Point3); */
 
-## References
+## Examples
+
+in libgraphics:
+
+	Point3
+	phongvshader(VSparams *sp)
+	{
+		Point3 pos;
+		Color a, d, s;
+		double ss;
+	
+		sp->v->n = model2world(sp->su->entity, sp->v->n);
+		sp->v->p = model2world(sp->su->entity, sp->v->p);
+		pos = sp->v->p;
+		addvattr(sp->v, "pos", VAPoint, &pos);
+		if(sp->v->mtl != nil && sp->v->mtl->normalmap != nil && sp->v->uv.w != 0){
+			sp->v->tangent = model2world(sp->su->entity, sp->v->tangent);
+			addvattr(sp->v, "tangent", VAPoint, &sp->v->tangent);
+		}
+		if(sp->v->mtl != nil){
+			a = sp->v->mtl->ambient;
+			d = sp->v->mtl->diffuse;
+			s = sp->v->mtl->specular;
+			ss = sp->v->mtl->shininess;
+			addvattr(sp->v, "ambient", VAPoint, &a);
+			addvattr(sp->v, "diffuse", VAPoint, &d);
+			addvattr(sp->v, "specular", VAPoint, &s);
+			addvattr(sp->v, "shininess", VANumber, &ss);
+		}
+		return world2clip(sp->su->camera, pos);
+	}
+
+in semblance:
+
+	out point pos;
+	out vector tangent;
+	out color ambient;
+	out color diffuse;
+	out color specular;
+	out double shininess;
+
+	vs phong() {
+		normal = model2world(normal);
+		position = model2world(position);
+		pos = position;
+		if(material != nil){
+			if(material->normalmap && uv.w != 0)
+				tangent = model2world(tangent);
+			ambient = material.ambient;
+			diffuse = material.diffuse;
+			specular = material.specular;
+			shininess = material.shininess;
+		}
+		return world2clip(pos);
+	}
+
 
 [1]: https://shithub.us/rodri/libgraphics
 [2]: https://shithub.us/rodri/renderfs
