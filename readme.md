@@ -25,9 +25,9 @@ It's largely influenced by the [RSL][3] and [GLSL][4] languages.
 		Point3 a, b;
 		double s;
 
-		b = b * a;	/* b = modulatept3(a, b); */
+		b = b * a;	/* b = modulatept3(b, a); */
 		b = b * s;	/* b = mulpt3(b, s); */
-		b = b * m;	/* xform3(b, m); */
+		b = b * m;	/* b = xform3(b, m); */
 		b = b × a;	/* b = crossvec3(b, a); */
 		b = b · a;	/* b = dotvec3(b, a); */
 		m = m * n;	/* mulm3(m, n); */
@@ -72,9 +72,9 @@ It's largely influenced by the [RSL][3] and [GLSL][4] languages.
 		- fragment
 			|   in shader   | in libgraphics |
 			+--------------------------------+
-			position	→ sp->v.p
-			color		→ sp->v.c
-			<attr>		→ sp->v.attrs["<attr>"]
+			position	→ sp->v->p
+			color		→ sp->v->c
+			<attr>		→ sp->v->attrs["<attr>"]
 	- swizzles
 		Point3 p;
 		Color c;

@@ -15,7 +15,8 @@ install(char *s, int t, double v)
 	memset(sym, 0, sizeof *sym);
 	sym->name = estrdup(s);
 	sym->type = t;
-	sym->u.val = v;
+	sym->dconst = v;
+	sym->var.type = -1;
 	sym->next = symtab;
 	symtab = sym;
 	return sym;

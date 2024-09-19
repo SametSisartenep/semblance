@@ -85,6 +85,6 @@ init(void)
 		install(consts[i].name, CONST, consts[i].val);
 	for(i = 0; i < nelem(builtins); i++){
 		s = install(builtins[i].name, BLTIN, 0);
-		s->u.fn = builtins[i].fn;
+		s->fn = builtins[i].fn;
 	}
 }
