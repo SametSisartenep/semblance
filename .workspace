@@ -1,0 +1,2 @@
+#!/bin/rc
+B *.[hcy] mkfile readme.md
