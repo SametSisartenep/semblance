@@ -14,6 +14,7 @@ scan(Lexer *l)
 	Token tok;
 	char buf[256], *p;
 	Rune r;
+	int base;
 begin:
 	memset(&tok, 0, sizeof(Token));
 
@@ -58,8 +59,37 @@ comment:
 	}
 
 	if(isdigitrune(r)){
-		Bungetrune(l->in);
-		Bgetd(l->in, &tok.v);
+		if(r == '0'){
+			r = Bgetc(l->in);
+			if(r != 'b' && r != 'o' && r != 'x'){
+				Bungetrune(l->in);
+				goto decimal;
+			}
+
+			switch(r){
+			case 'b': base =  2; break;
+			case 'o': base =  8; break;
+			case 'x': base = 16; break;
+			default:  base = 10; break;	/* can't happen but calms the compiler */
+			}
+
+			p = buf;
+			while((r = Bgetrune(l->in)) != Beof && isdigitrune(r)){
+				if(p+runelen(r) >= buf + sizeof(buf)){
+					werrstr("number is too long");
+					return Terr;
+				}
+				p += runetochar(p, &r);
+			}
+			Bungetrune(l->in);
+			*p = 0;
+
+			tok.v = strtoll(buf, nil, base);
+		}else{
+decimal:
+			Bungetrune(l->in);
+			Bgetd(l->in, &tok.v);
+		}
 		tok.type = TNUM;
 	}else if(isalpharune(r) || r == '_'){
 		p = buf;
