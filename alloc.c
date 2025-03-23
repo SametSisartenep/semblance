@@ -6,9 +6,9 @@ emalloc(ulong n)
 {
 	void *p;
 
-	p = malloc(n);
+	p = mallocz(n, 1);
 	if(p == nil)
-		sysfatal("malloc: %r");
+		sysfatal("mallocz: %r");
 	setmalloctag(p, getcallerpc(&n));
 	return p;
 }

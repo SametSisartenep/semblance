@@ -3,15 +3,14 @@
 BIN=/$objtype/bin
 TARG=sslc
 OFILES=\
+	main.$O\
 	alloc.$O\
 	sym.$O\
 	builtin.$O\
-	y.tab.$O
-YFILES=\
-	semblance.y
+	lexer.$O\
+
 HFILES=\
 	dat.h\
 	fns.h\
-	y.tab.h
 
 </sys/src/cmd/mkone

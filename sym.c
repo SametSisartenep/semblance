@@ -1,5 +1,6 @@
 #include <u.h>
 #include <libc.h>
+#include <bio.h>
 #include <geometry.h>
 #include "dat.h"
 #include "fns.h"
@@ -7,15 +8,14 @@
 static Symbol *symtab;
 
 Symbol *
-install(char *s, int t, double v)
+declsym(char *s, int t, double v)
 {
 	Symbol *sym;
 
 	sym = emalloc(sizeof(Symbol));
-	memset(sym, 0, sizeof *sym);
 	sym->name = estrdup(s);
 	sym->type = t;
-	sym->dconst = v;
+	sym->cval = v;
 	sym->var.type = -1;
 	sym->next = symtab;
 	symtab = sym;
@@ -23,7 +23,7 @@ install(char *s, int t, double v)
 }
 
 Symbol *
-lookup(char *s)
+getsym(char *s)
 {
 	Symbol *sym;
 

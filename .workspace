@@ -1,2 +1,2 @@
 #!/bin/rc
-B *.[hcy] mkfile readme.md
+B *.[hc] mkfile readme.md

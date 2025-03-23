@@ -1,23 +1,88 @@
-enum
-{
+enum {
+	TEOF = 1<<24,
 	TDOUBLE,
-	TPOINT,
-	TVECTOR,
-	TNORMAL,
+	TPT2,
+	TPT3,
+	TVEC2,
+	TVEC3,
+	TNORMAL2,
+	TNORMAL3,
 	TQUAT,
+	TMAT3,
+	TMAT4,
+	TNUM,
+	TSTR,
+	TPP,
+	TMM,
+	TEQ,
+	TLAND,
+	TLOR,
+	TID,
 };
 
-enum
+typedef struct Line Line;
+typedef struct Token Token;
+typedef struct Lexer Lexer;
+
+struct Line
 {
+	char *file;
+	ulong line;
+};
+
+struct Token
+{
+	int type;
+	char *s;
+	double v;
+};
+
+struct Lexer
+{
+	Biobuf *in;
+	Line ln;
+	Token tok;
+	Token peektok;
+};
+
+enum {
 	NODENUM,
 	NODESYM,
 };
 
+enum {
+	SYMVAR,
+	SYMCONST,
+	SYMTYPE,
+};
+
+enum {
+	TYPDOUBLE,
+	TYPPOINT,
+	TYPVECTOR,
+	TYPNORMAL,
+	TYPQUAT,
+	TYPMAT3,
+	TYPMAT4,
+};
+
+typedef struct Keyword Keyword;
+typedef struct Type Type;
 typedef struct Const Const;
-typedef struct Builtin Builtin;
 typedef struct Var Var;
 typedef struct Symbol Symbol;
 typedef struct Node Node;
+
+struct Keyword
+{
+	char *name;
+	Rune tok;
+};
+
+struct Type
+{
+	int type;
+};
 
 struct Const
 {
@@ -25,20 +90,10 @@ struct Const
 	double val;
 };
 
-struct Builtin
-{
-	char *name;
-	double (*fn)();
-};
-
 struct Var
 {
 	int type;
-	union {
-		double dval;
-		Point3 pval;
-		Quaternion qval;
-	};
+	double val[4];
 };
 
 struct Symbol
@@ -46,9 +101,8 @@ struct Symbol
 	char *name;
 	int type;
 	union {
-		Var var;		/* ID */
-		double dconst;		/* CONST */
-		double (*fn)(double);	/* BLTIN */
+		Var var;		/* SYMVAR */
+		double cval;		/* SYMCONST */
 	};
 	Symbol *next;
 };

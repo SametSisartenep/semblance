@@ -1,12 +1,20 @@
-Symbol *install(char*, int, double);
-Symbol *lookup(char*);
-double round(double);
-int lookuptype(char*);
-char* typename(int);
-char* ctypename(int);
-void init(void);
+/* alloc */
 void *emalloc(ulong);
 void *erealloc(void*, ulong);
 char *estrdup(char*);
 
-int yyparse(void);
+/* sym */
+Symbol *declsym(char*, int, double);
+Symbol *getsym(char*);
+
+/* builtin */
+int lookupkw(char*);
+int opstart(int);
+int findop(char*);
+void initsyms(void);
+char *gettokenname(Token*);
+void printtoken(Token*);
+
+/* lexer */
+int lex(Lexer*);
+int peek(Lexer*);
