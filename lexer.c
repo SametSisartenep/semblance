@@ -8,6 +8,22 @@
 static Token Teof = {TEOF};
 static Token Terr = {-1};
 
+static int
+isbasedigitrune(Rune r, int base)
+{
+	switch(base){
+	case 2:
+		return r == '0' || r == '1';
+	case 8:
+		return r >= '0' && r <= '7';
+	case 16:
+		return isdigitrune(r) ||
+		(r >= 'a' && r <= 'f') ||
+		(r >= 'A' && r <= 'F');
+	}
+	return isdigitrune(r);
+}
+
 static Token
 scan(Lexer *l)
 {
@@ -61,20 +77,17 @@ comment:
 	if(isdigitrune(r)){
 		if(r == '0'){
 			r = Bgetc(l->in);
-			if(r != 'b' && r != 'o' && r != 'x'){
-				Bungetrune(l->in);
-				goto decimal;
-			}
-
 			switch(r){
 			case 'b': base =  2; break;
 			case 'o': base =  8; break;
 			case 'x': base = 16; break;
-			default:  base = 10; break;	/* can't happen but calms the compiler */
+			default:
+				Bungetc(l->in);
+				goto decimal;
 			}
 
 			p = buf;
-			while((r = Bgetrune(l->in)) != Beof && isdigitrune(r)){
+			while((r = Bgetrune(l->in)) != Beof && isbasedigitrune(r, base)){
 				if(p+runelen(r) >= buf + sizeof(buf)){
 					werrstr("number is too long");
 					return Terr;
