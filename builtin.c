@@ -72,43 +72,62 @@ findop(char *s)
 	return -1;
 }
 
+int
+vartype(int tt)
+{
+	switch(tt){
+	case TDOUBLE: return TYPDOUBLE;
+	case TPT2: return TYPPT2;
+	case TPT3: return TYPPT3;
+	case TVEC2: return TYPVEC2;
+	case TVEC3: return TYPVEC3;
+	case TNORMAL2: return TYPNORMAL2;
+	case TNORMAL3: return TYPNORMAL3;
+	case TQUAT: return TYPQUAT;
+	case TMAT3: return TYPMAT3;
+	case TMAT4: return TYPMAT4;
+	}
+	return -1;
+}
+
 void
 initsyms(void)
 {
 	int i;
 
 	for(i = 0; i < nelem(consts); i++)
-		declsym(consts[i].name, SYMCONST, consts[i].val);
+		if(declsym(consts[i].name, SYMCONST, consts[i].val) == nil)
+			sysfatal("could not declare constant: %r");
 }
 
 char *
 gettokenname(Token *t)
 {
 	static char *tab[] = {
-	 [TDOUBLE-TEOF]		"TDOUBLE",
-	 [TPT2-TEOF]		"TPT2",
-	 [TPT3-TEOF]		"TPT3",
-	 [TVEC2-TEOF]		"TVEC2",
-	 [TVEC3-TEOF]		"TVEC3",
-	 [TNORMAL2-TEOF]	"TNORMAL2",
-	 [TNORMAL3-TEOF]	"TNORMAL3",
-	 [TQUAT-TEOF]		"TQUAT",
-	 [TMAT3-TEOF]		"TMAT3",
-	 [TMAT4-TEOF]		"TMAT4",
-	 [TNUM-TEOF]		"TNUM",
-	 [TSTR-TEOF]		"TSTR",
-	 [TPP-TEOF]		"TPP",
-	 [TMM-TEOF]		"TMM",
-	 [TEQ-TEOF]		"TEQ",
-	 [TLAND-TEOF]		"TLAND",
-	 [TLOR-TEOF]		"TLOR",
-	 [TID-TEOF]		"TID",
+	 [TDOUBLE-TDOUBLE]	"TDOUBLE",
+	 [TPT2-TDOUBLE]		"TPT2",
+	 [TPT3-TDOUBLE]		"TPT3",
+	 [TVEC2-TDOUBLE]	"TVEC2",
+	 [TVEC3-TDOUBLE]	"TVEC3",
+	 [TNORMAL2-TDOUBLE]	"TNORMAL2",
+	 [TNORMAL3-TDOUBLE]	"TNORMAL3",
+	 [TQUAT-TDOUBLE]	"TQUAT",
+	 [TMAT3-TDOUBLE]	"TMAT3",
+	 [TMAT4-TDOUBLE]	"TMAT4",
+	 [TNUM-TDOUBLE]		"TNUM",
+	 [TSTR-TDOUBLE]		"TSTR",
+	 [TPP-TDOUBLE]		"TPP",
+	 [TMM-TDOUBLE]		"TMM",
+	 [TEQ-TDOUBLE]		"TEQ",
+	 [TLAND-TDOUBLE]	"TLAND",
+	 [TLOR-TDOUBLE]		"TLOR",
+	 [TID-TDOUBLE]		"TID",
 	};
 
-	if(t->type < TEOF || t->type >= TEOF + nelem(tab))
+	if(t->type < TDOUBLE || t->type >= TDOUBLE + nelem(tab))
 		return nil;
 
-	return tab[t->type-TEOF];
+	return tab[t->type-TDOUBLE];
 }
 
 void

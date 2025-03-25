@@ -178,3 +178,34 @@ peek(Lexer *l)
 		l->peektok = scan(l);
 	return l->peektok.type;
 }
+
+int
+expect(Lexer *l, int t)
+{
+	if(lex(l) != t){
+		werrstr("expected '%C', got '%C' (%s)",
+			t, l->tok.type, gettokenname(&l->tok));
+		return 0;
+	}
+	return 1;
+}
+
+int
+gottype(Lexer *l)
+{
+	switch(peek(l)){
+	case TDOUBLE:
+	case TPT2:
+	case TPT3:
+	case TVEC2:
+	case TVEC3:
+	case TNORMAL2:
+	case TNORMAL3:
+	case TQUAT:
+	case TMAT3:
+	case TMAT4:
+		lex(l);
+		return 1;
+	}
+	return 0;
+}
