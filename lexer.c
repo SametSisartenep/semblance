@@ -5,6 +5,8 @@
 #include "dat.h"
 #include "fns.h"
 
+extern int debuglexer;
+
 static Token Teof = {TEOF};
 static Token Terr = {-1};
 
@@ -17,9 +19,9 @@ isbasedigitrune(Rune r, int base)
 	case 8:
 		return r >= '0' && r <= '7';
 	case 16:
-		return isdigitrune(r) ||
-		(r >= 'a' && r <= 'f') ||
-		(r >= 'A' && r <= 'F');
+		return isdigitrune(r)
+		|| (r >= 'a' && r <= 'f')
+		|| (r >= 'A' && r <= 'F');
 	}
 	return isdigitrune(r);
 }
@@ -112,8 +114,8 @@ decimal:
 				return Terr;
 			}
 			p += runetochar(p, &r);
-		}while((r = Bgetrune(l->in)) != Beof &&
-			(isalpharune(r) || isdigitrune(r) || r == '_'));
+		}while((r = Bgetrune(l->in)) != Beof
+			&& (isalpharune(r) || isdigitrune(r) || r == '_'));
 		Bungetrune(l->in);
 		*p = 0;
 
@@ -168,6 +170,8 @@ lex(Lexer *l)
 		memset(&l->peektok, 0, sizeof(Token));
 	}else
 		l->tok = scan(l);
+	if(debuglexer)
+		fprint(2, "lex: '%s'\n", gettokenname(l->tok.type));
 	return l->tok.type;
 }
 
@@ -176,6 +180,8 @@ peek(Lexer *l)
 {
 	if(l->peektok.type <= 0)
 		l->peektok = scan(l);
+	if(debuglexer)
+		fprint(2, "peek: '%s'\n", gettokenname(l->peektok.type));
 	return l->peektok.type;
 }
 
@@ -183,29 +189,49 @@ int
 expect(Lexer *l, int t)
 {
 	if(lex(l) != t){
-		werrstr("expected '%C', got '%C' (%s)",
-			t, l->tok.type, gettokenname(&l->tok));
+		werrstr("expected '%s', got '%s'",
+			gettokenname(t), gettokenname(l->tok.type));
 		return 0;
 	}
 	return 1;
 }
 
 int
+expectany(Lexer *l, ...)
+{
+	va_list a;
+	int t, e;
+
+	va_start(a, l);
+	t = lex(l);
+	while((e = va_arg(a, int)) != 0)
+		if(t == e)
+			return 1;
+	va_end(a);
+	werrstr("unexpected '%s'", gettokenname(t));
+	return 0;
+}
+
+int
+gotany(Lexer *l, ...)
+{
+	va_list a;
+	int t;
+
+	va_start(a, l);
+	while((t = va_arg(a, int)) != 0)
+		if(peek(l) == t){
+			lex(l);
+			return 1;
+		}
+	va_end(a);
+	return 0;
+}
+
+int
 gottype(Lexer *l)
 {
-	switch(peek(l)){
-	case TDOUBLE:
-	case TPT2:
-	case TPT3:
-	case TVEC2:
-	case TVEC3:
-	case TNORMAL2:
-	case TNORMAL3:
-	case TQUAT:
-	case TMAT3:
-	case TMAT4:
-		lex(l);
-		return 1;
-	}
-	return 0;
+	return gotany(l, TDOUBLE, TPT2, TPT3, TVEC2,
+		TVEC3, TNORMAL2, TNORMAL3, TQUAT,
+		TMAT3, TMAT4, 0);
 }

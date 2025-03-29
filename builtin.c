@@ -90,6 +90,20 @@ vartype(int tt)
 	return -1;
 }
 
+int
+optype(int tt)
+{
+	switch(tt){
+	case '+': return OPADD;
+	case '-': return OPSUB;
+	case '*': return OPMUL;
+	case '/': return OPDIV;
+	case L'·': return OPDOT;
+	case L'×': return OPCROSS;
+	}
+	return -1;
+}
+
 void
 initsyms(void)
 {
@@ -101,46 +115,45 @@ initsyms(void)
 }
 
 char *
-gettokenname(Token *t)
+gettokenname(int t)
 {
 	static char *tab[] = {
-	 [TDOUBLE-TDOUBLE]	"TDOUBLE",
-	 [TPT2-TDOUBLE]		"TPT2",
-	 [TPT3-TDOUBLE]		"TPT3",
-	 [TVEC2-TDOUBLE]	"TVEC2",
-	 [TVEC3-TDOUBLE]	"TVEC3",
-	 [TNORMAL2-TDOUBLE]	"TNORMAL2",
-	 [TNORMAL3-TDOUBLE]	"TNORMAL3",
-	 [TQUAT-TDOUBLE]	"TQUAT",
-	 [TMAT3-TDOUBLE]	"TMAT3",
-	 [TMAT4-TDOUBLE]	"TMAT4",
-	 [TNUM-TDOUBLE]		"TNUM",
-	 [TSTR-TDOUBLE]		"TSTR",
-	 [TPP-TDOUBLE]		"TPP",
-	 [TMM-TDOUBLE]		"TMM",
-	 [TEQ-TDOUBLE]		"TEQ",
-	 [TLAND-TDOUBLE]	"TLAND",
-	 [TLOR-TDOUBLE]		"TLOR",
-	 [TID-TDOUBLE]		"TID",
+	 [TEOF-TEOF]		"TEOF",
+	 [TDOUBLE-TEOF]		"TDOUBLE",
+	 [TPT2-TEOF]		"TPT2",
+	 [TPT3-TEOF]		"TPT3",
+	 [TVEC2-TEOF]		"TVEC2",
+	 [TVEC3-TEOF]		"TVEC3",
+	 [TNORMAL2-TEOF]	"TNORMAL2",
+	 [TNORMAL3-TEOF]	"TNORMAL3",
+	 [TQUAT-TEOF]		"TQUAT",
+	 [TMAT3-TEOF]		"TMAT3",
+	 [TMAT4-TEOF]		"TMAT4",
+	 [TNUM-TEOF]		"TNUM",
+	 [TSTR-TEOF]		"TSTR",
+	 [TPP-TEOF]		"TPP",
+	 [TMM-TEOF]		"TMM",
+	 [TEQ-TEOF]		"TEQ",
+	 [TLAND-TEOF]		"TLAND",
+	 [TLOR-TEOF]		"TLOR",
+	 [TID-TEOF]		"TID",
 	};
+	static char buf[5][8];
+	static int idx;
 
-	if(t->type < TDOUBLE || t->type >= TDOUBLE + nelem(tab))
-		return nil;
+	if(t < TEOF || t >= TEOF + nelem(tab)){
+		snprint(buf[idx], sizeof buf[idx], "%C", t);
+		idx = (idx + 1) % nelem(buf);
+		return buf[idx - 1];
+	}
 
-	return tab[t->type-TDOUBLE];
+	return tab[t - TEOF];
 }
 
 void
 printtoken(Token *t)
 {
-	char *s;
-
-	s = gettokenname(t);
-	if(s == nil){
-		print("%C\n", t->type);
-		return;
-	}
-	print("%s", s);
+	print("%s", gettokenname(t->type));
 	if(t->type == TNUM)
 		print(" (%g)", t->v);
 	else if(t->type == TSTR || t->type == TID)

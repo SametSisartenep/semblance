@@ -1,5 +1,6 @@
 enum {
 	TEOF = 1<<24,
+	/* types */
 	TDOUBLE,
 	TPT2,
 	TPT3,
@@ -10,13 +11,16 @@ enum {
 	TQUAT,
 	TMAT3,
 	TMAT4,
+	/* literals */
 	TNUM,
 	TSTR,
+	/* ops */
 	TPP,
 	TMM,
 	TEQ,
 	TLAND,
 	TLOR,
+	/* syms */
 	TID,
 };
 
@@ -46,17 +50,6 @@ struct Lexer
 };
 
 enum {
-	NODENUM,
-	NODESYM,
-};
-
-enum {
-	SYMVAR,
-	SYMCONST,
-	SYMTYPE,
-};
-
-enum {
 	TYPDOUBLE,
 	TYPPT2,
 	TYPPT3,
@@ -69,8 +62,31 @@ enum {
 	TYPMAT4,
 };
 
+enum {
+	OPADD,
+	OPSUB,
+	OPMUL,
+	OPDIV,
+	OPDOT,
+	OPCROSS,
+	OPUPLUS,
+	OPUMINUS,
+};
+
+enum {
+	SYMVAR,
+	SYMCONST,
+	SYMTYPE,
+};
+
+enum {
+	NODENUM,
+	NODESYM,
+};
+
 typedef struct Keyword Keyword;
 typedef struct Type Type;
+typedef struct Op Op;
 typedef struct Const Const;
 typedef struct Var Var;
 typedef struct Symbol Symbol;
@@ -85,6 +101,12 @@ struct Keyword
 struct Type
 {
 	int type;
+};
+
+struct Op
+{
+	int type;
+	Rune tok;
 };
 
 struct Const

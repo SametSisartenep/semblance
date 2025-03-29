@@ -13,12 +13,15 @@ int lookupkw(char*);
 int opstart(int);
 int findop(char*);
 int vartype(int);
+int optype(int);
 void initsyms(void);
-char *gettokenname(Token*);
+char *gettokenname(int);
 void printtoken(Token*);
 
 /* lexer */
 int lex(Lexer*);
 int peek(Lexer*);
 int expect(Lexer*, int);
+int expectany(Lexer*, ...);
+int gotany(Lexer*, ...);
 int gottype(Lexer*);
